@@ -24,6 +24,8 @@ fn rename() {
         .unwrap()
         .to_string();
 
+    println!("{}", manifest_path);
+
     let manifest = fs::read_to_string(manifest_path)
         .expect("Unable to read file");
 
@@ -45,12 +47,17 @@ fn extract_and_copy(file_name: String) {
     let mut archive = zip::ZipArchive::new(file).unwrap();
 
     let home_dir = dirs::home_dir().unwrap();
+    let temp_dir = Path::new(&home_dir)
+        .join(TEMP_DIR)
+        .to_str()
+        .unwrap()
+        .to_string();
 
-    fs::create_dir_all(&TEMP_DIR).unwrap();
+    fs::create_dir_all(&temp_dir).unwrap();
 
     for i in 0..archive.len() {
         let mut file = archive.by_index(i).unwrap();
-        let outpath = Path::new(&TEMP_DIR).join(file.sanitized_name());
+        let outpath = Path::new(&temp_dir).join(file.sanitized_name());
 
         {
             let comment = file.comment();
