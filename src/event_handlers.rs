@@ -24,10 +24,11 @@ fn rename() {
         .unwrap()
         .to_string();
 
-    let manifest = fs::read_to_string(manifest_path).expect("Unable to read file");
+    let manifest = fs::read_to_string(manifest_path)
+        .expect("Unable to read file");
 
-    let manifest: serde_json::Value =
-        serde_json::from_str(&manifest).expect("JSON was not well-formatted");
+    let manifest: serde_json::Value = serde_json::from_str(&manifest)
+        .expect("JSON was not well-formatted");
 
     let game_dir = Path::new(&home_dir)
         .join(GAMES_DIR)
@@ -44,11 +45,6 @@ fn extract_and_copy(file_name: String) {
     let mut archive = zip::ZipArchive::new(file).unwrap();
 
     let home_dir = dirs::home_dir().unwrap();
-    let tmp_dir = Path::new(&home_dir)
-        .join(TEMP_DIR)
-        .to_str()
-        .unwrap()
-        .to_string();
 
     fs::create_dir_all(&TEMP_DIR).unwrap();
 

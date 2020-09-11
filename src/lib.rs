@@ -1,9 +1,11 @@
 mod db;
-mod event_handlers;
+mod game;
 mod models;
+mod event_handlers;
 
 use dirs;
 use std::fs;
+use std::thread;
 use std::path::Path;
 use tauri::Webview;
 
@@ -22,6 +24,10 @@ pub fn init() {
 
     fs::create_dir_all(&games_dir).unwrap();
     fs::create_dir_all(&data_dir).unwrap();
+
+    thread::spawn(move || {
+      game::serve();
+    });
 }
 
 pub fn tauri_handler(webview: &mut Webview, _source: String) {
