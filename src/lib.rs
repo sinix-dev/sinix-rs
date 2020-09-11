@@ -2,20 +2,18 @@ mod db;
 mod event_handlers;
 mod models;
 
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use tauri::Webview;
 use std::fs;
 use dirs;
 
 pub fn init() {
-  let home = dirs::home_dir().unwrap();
-  let games: String = Path::new(&home).join(".sinix/games").to_str().unwrap().to_string();
-  let data: String = Path::new(&home).join(".sinix/data").to_str().unwrap().to_string();
+  let home_dir = dirs::home_dir().unwrap();
+  let games_dir = Path::new(&home_dir).join(".sinix/games").to_str().unwrap().to_string();
+  let data_dir = Path::new(&home_dir).join(".sinix/data").to_str().unwrap().to_string();
 
-  println!("{:?}\n{:?}", games, data);
-
-  fs::create_dir_all(&games).unwrap();
-  fs::create_dir_all(&data).unwrap();
+  fs::create_dir_all(&games_dir).unwrap();
+  fs::create_dir_all(&data_dir).unwrap();
 }
 
 pub fn tauri_handler(webview: &mut Webview, _source: String) {

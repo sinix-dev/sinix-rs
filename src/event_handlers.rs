@@ -1,15 +1,20 @@
 use crate::models::Reply;
+use std::path::Path;
 use std::fs;
 use std::io;
 use zip;
+use dirs;
 
 fn extract_and_copy(file_name: String){
   let file = fs::File::open(&file_name).unwrap();
   let mut archive = zip::ZipArchive::new(file).unwrap();
 
+  let home_dir = dirs::home_dir().unwrap();
+  let games_dir = Path::new(&home_dir).join(".sinix/games").to_str().unwrap().to_string();
+
   for i in 0..archive.len() {
     let mut file = archive.by_index(i).unwrap();
-    let outpath = file.sanitized_name();
+    let outpath = Path::new(&games_dir).join(file.sanitized_name());
 
     {
       let comment = file.comment();
