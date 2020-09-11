@@ -2,15 +2,25 @@ mod db;
 mod event_handlers;
 mod models;
 
+use std::path::{Path, PathBuf};
 use tauri::Webview;
+use std::fs;
+use dirs;
 
 pub fn init() {
-  // Initialize the Sinix app
-  // Directory to store games
-  // Cacheing directory
+  let home = dirs::home_dir().unwrap();
+  let games: String = Path::new(&home).join(".sinix/games").to_str().unwrap().to_string();
+  let data: String = Path::new(&home).join(".sinix/data").to_str().unwrap().to_string();
+
+  println!("{:?}\n{:?}", games, data);
+
+  fs::create_dir_all(&games).unwrap();
+  fs::create_dir_all(&data).unwrap();
 }
 
 pub fn tauri_handler(webview: &mut Webview, _source: String) {
+  // handler function for tauri app setup callback
+
   let webview = webview.as_mut();
 
   tauri::event::listen(String::from("sinix-install"), move |msg| {
