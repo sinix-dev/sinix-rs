@@ -2,19 +2,60 @@ use crate::models::Reply;
 use std::path::Path;
 use std::fs;
 use std::io;
+use serde_json;
 use zip;
 use dirs;
+
+const GAMES_DIR: &str = ".sinix/games";
+const TEMP_DIR: &str = ".sinix/games/.tmp_game";
+
+fn rename(){
+  let home_dir = dirs::home_dir().unwrap();
+  let tmp_dir = Path::new(&home_dir)
+    .join(TEMP_DIR)
+    .to_str()
+    .unwrap()
+    .to_string();
+
+  let manifest_path = Path::new(&home_dir)
+    .join(TEMP_DIR)
+    .join("sinix.manifest.json")
+    .to_str()
+    .unwrap()
+    .to_string();
+
+  let manifest = fs::read_to_string(manifest_path)
+    .expect("Unable to read file");
+
+  let manifest: serde_json::Value =
+        serde_json::from_str(&manifest).expect("JSON was not well-formatted");
+
+  let game_dir = Path::new(&home_dir)
+    .join(GAMES_DIR)
+    .join(manifest["slug"].as_str().unwrap())
+    .to_str()
+    .unwrap()
+    .to_string();
+
+  fs::rename(tmp_dir, game_dir).unwrap();
+}
 
 fn extract_and_copy(file_name: String){
   let file = fs::File::open(&file_name).unwrap();
   let mut archive = zip::ZipArchive::new(file).unwrap();
 
   let home_dir = dirs::home_dir().unwrap();
-  let games_dir = Path::new(&home_dir).join(".sinix/games").to_str().unwrap().to_string();
+  let tmp_dir = Path::new(&home_dir)
+    .join(TEMP_DIR)
+    .to_str()
+    .unwrap()
+    .to_string();
+
+  fs::create_dir_all(&TEMP_DIR).unwrap();
 
   for i in 0..archive.len() {
     let mut file = archive.by_index(i).unwrap();
-    let outpath = Path::new(&games_dir).join(file.sanitized_name());
+    let outpath = Path::new(&TEMP_DIR).join(file.sanitized_name());
 
     {
       let comment = file.comment();
@@ -59,6 +100,8 @@ fn extract_and_copy(file_name: String){
       }
     }
   }
+
+  rename();
 }
 
 pub fn sinix_install(mut webview: tauri::WebviewMut, msg: Option<String>){
