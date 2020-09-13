@@ -2,14 +2,22 @@ mod db;
 mod game;
 mod models;
 mod event_handlers;
+pub mod channel;
 
 use dirs;
 use std::fs;
 use std::thread;
 use std::path::Path;
 use tauri::Webview;
+use tokio::{runtime, spawn};
 
 pub fn init() {
+    thread::spawn(move || {
+      runtime::Runtime::new().unwrap().block_on(async {
+        channel::init().await;
+      });
+    });
+
     let home_dir = dirs::home_dir().unwrap();
     let games_dir = Path::new(&home_dir)
         .join(".sinix/games")
