@@ -19,7 +19,6 @@ pub struct Event {
   payload: String,
 }
 
-
 pub async fn publish_handler(body: Event, clients: Clients) -> Result<impl Reply> {
   let clients = clients.read().await;
   let username = String::from(&body.username);

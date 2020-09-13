@@ -1,11 +1,11 @@
 use crate::models::Reply;
 
-use warp;
 use env_logger;
-use std::sync::Arc;
-use std::convert::Infallible;
 use std::collections::HashMap;
+use std::convert::Infallible;
+use std::sync::Arc;
 use tokio::sync::{mpsc, RwLock};
+use warp;
 use warp::{ws::Message, Filter, Rejection};
 
 mod handler;
@@ -14,17 +14,16 @@ mod ws;
 type Result<T> = std::result::Result<T, Rejection>;
 type Clients = Arc<RwLock<HashMap<String, Client>>>;
 
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub struct Client {
   pub username: String,
   pub sender: Option<mpsc::UnboundedSender<std::result::Result<Message, warp::Error>>>,
 }
 
-pub async fn init(){
+pub async fn init() {
   env_logger::init();
   let clients: Clients = Arc::new(RwLock::new(HashMap::new()));
-  let health_route = warp::path!("health")
-    .and_then(handler::health_handler);
+  let health_route = warp::path!("health").and_then(handler::health_handler);
 
   let register = warp::path("register");
   let register_routes = register
@@ -37,7 +36,7 @@ pub async fn init(){
         .and(warp::delete())
         .and(warp::path::param())
         .and(with_clients(clients.clone()))
-      .and_then(handler::unregister_handler),
+        .and_then(handler::unregister_handler),
     );
 
   let publish = warp::path!("publish")
