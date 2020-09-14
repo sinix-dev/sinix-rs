@@ -20,7 +20,7 @@ pub async fn serve() -> std::io::Result<()> {
 
     App::new().service(fs::Files::new("/", &games_dir))
   })
-  .bind("127.0.0.1:8088")?
+  .bind("127.0.0.1:41432")?
   .run()
   .await
 }
