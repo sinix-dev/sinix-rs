@@ -38,7 +38,10 @@ fn rename() {
     .unwrap()
     .to_string();
 
-  fs::rename(tmp_dir, game_dir).unwrap();
+  fs::rename(&tmp_dir, &game_dir).unwrap_or_else(|_err| {
+    fs::remove_dir_all(&game_dir).unwrap();
+    fs::rename(tmp_dir, game_dir).unwrap();
+  });
 }
 
 fn extract_and_copy(file_name: String) {

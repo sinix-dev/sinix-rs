@@ -34,7 +34,7 @@ pub fn init() {
   fs::create_dir_all(&data_dir).unwrap();
 
   thread::spawn(move || {
-    game::serve();
+    game::serve().unwrap();
   });
 }
 
