@@ -59,7 +59,7 @@ fn extract_and_copy(file_name: String) {
 
   for i in 0..archive.len() {
     let mut file = archive.by_index(i).unwrap();
-    let outpath = Path::new(&temp_dir).join(file.sanitized_name());
+    let outpath = Path::new(&temp_dir).join(file.name());
 
     {
       let comment = file.comment();
