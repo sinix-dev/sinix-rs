@@ -1,3 +1,4 @@
+use std::vec::Vec;
 use super::{ws, Client, Clients, Result};
 use serde::{Deserialize, Serialize};
 use warp::{http::StatusCode, reply::json, ws::Message, Reply};
@@ -10,6 +11,11 @@ pub struct RegisterResponse {
 #[derive(Deserialize, Debug)]
 pub struct RegisterRequest {
   username: String,
+}
+
+#[derive(Serialize, Debug)]
+pub struct GetUsersResponse {
+  users: Vec<String>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -74,6 +80,17 @@ pub async fn ws_handler(
     Some(c) => Ok(ws.on_upgrade(move |socket| ws::client_connection(socket, username, clients, c))),
     None => Err(warp::reject::not_found()),
   }
+}
+
+pub async fn getusers_handler(clients: Clients) -> Result<impl Reply> {
+  let clients_map = clients.read().await;
+  let mut users = Vec::new();
+
+  for username in clients_map.keys() {
+    users.push(username.to_string())
+  }
+
+  Ok(json(&GetUsersResponse { users }))
 }
 
 pub async fn health_handler() -> Result<impl Reply> {

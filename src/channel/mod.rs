@@ -44,6 +44,10 @@ pub async fn init() {
     .and(with_clients(clients.clone()))
     .and_then(handler::publish_handler);
 
+  let getusers = warp::path!("getusers")
+    .and(with_clients(clients.clone()))
+    .and_then(handler::getusers_handler);
+
   let ws_route = warp::path("ws")
     .and(warp::ws())
     .and(warp::path::param())
@@ -54,6 +58,7 @@ pub async fn init() {
     .or(ws_route)
     .or(register_routes)
     .or(publish)
+    .or(getusers)
     .with(
       warp::cors()
         .allow_any_origin()
