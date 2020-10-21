@@ -124,3 +124,16 @@ pub fn sinix_install(mut webview: tauri::WebviewMut, msg: Option<String>) {
   )
   .expect("failed to emit");
 }
+
+pub fn database(mut webview: tauri::WebviewMut, msg: Option<String>) {
+  let reply = Reply {
+    data: "response".to_string(),
+  };
+
+  tauri::event::emit(
+    &mut webview,
+    String::from("sinix-database-response"),
+    Some(serde_json::to_string(&reply).unwrap()),
+  )
+  .expect("failed to emit");
+}
