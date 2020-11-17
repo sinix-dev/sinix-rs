@@ -42,9 +42,16 @@ pub fn tauri_handler(webview: &mut Webview, _source: String) {
   // handler function for tauri app setup callback
 
   let webview = webview.as_mut();
+  let webview_clone = webview.clone();
 
   tauri::event::listen(String::from("sinix-install"), move |msg| {
-    event_handlers::sinix_install(webview.clone(), msg)
+    event_handlers::sinix_install(webview_clone.clone(), msg);
+  });
+
+  let webview_clone = webview.clone();
+
+  tauri::event::listen(String::from("sinix-database"), move |msg| {
+    event_handlers::database(webview_clone.clone(), msg);
   });
 }
 
